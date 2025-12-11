@@ -617,6 +617,16 @@
     padding: 4px 10px;
     cursor: pointer;
   }
+  
+  .log-delete-btn {
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(248,113,113,0.9);
+    background: rgba(127,29,29,0.15);
+    color: #fecaca;
+    font-size: 0.86rem;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
 
   /* PROGRESSION */
 
@@ -1199,14 +1209,59 @@
         editBtn.textContent = "Modifier";
         editBtn.setAttribute("data-index", String(index));
 
+        var deleteBtn = document.createElement("button");
+        deleteBtn.className = "log-delete-btn";
+        deleteBtn.textContent = "Supprimer";
+        deleteBtn.setAttribute("data-index", String(index));
+
         actions.appendChild(tag);
         actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
 
         item.appendChild(main);
         item.appendChild(actions);
         logList.appendChild(item);
       });
     }
+	
+    function deleteLogEntry(dayKey, index) {
+      var dayLogs = logs[dayKey] || [];
+      var entry = dayLogs[index];
+      if (!entry) return;
+
+      var ok = window.confirm(
+        "Supprimer cette série ?\n" +
+        entry.workoutName + " – " + entry.exerciseName +
+        " (Série " + entry.setNumber + ")"
+      );
+      if (!ok) return;
+
+      // Retire l'entrée
+      dayLogs.splice(index, 1);
+
+      // Si on était en train d'éditer cette entrée → on quitte le mode édition
+      if (editingEntry && editingEntry.dayKey === dayKey) {
+        if (editingEntry.index === index) {
+          exitEditMode();
+        } else if (editingEntry.index > index) {
+          // les index suivants sont décalés
+          editingEntry.index -= 1;
+        }
+      }
+
+      // Si plus aucune entrée ce jour → supprime la clé, sinon met à jour
+      if (dayLogs.length === 0) {
+        delete logs[dayKey];
+      } else {
+        logs[dayKey] = dayLogs;
+      }
+
+      saveLogs();
+      renderTodayLogs();
+      updateExerciseMeta();
+    }
+	
 
     function renderExerciseProgress() {
       var workout = getWorkoutById(workoutSelect.value);
@@ -1562,16 +1617,25 @@
         exitEditMode();
       });
 
-      logList.addEventListener("click", function (e) {
-        var btn = e.target;
-        if (!btn.classList.contains("log-edit-btn")) return;
-        var index = Number(btn.getAttribute("data-index"));
-        var dayKey = getTodayKey();
-        var dayLogs = logs[dayKey] || [];
-        var entry = dayLogs[index];
-        if (!entry) return;
-        enterEditMode(dayKey, index, entry);
-      });
+    logList.addEventListener("click", function (e) {
+      var btn = e.target;
+      var dayKey = getTodayKey();
+
+      if (btn.classList.contains("log-edit-btn")) {
+        var indexEdit = Number(btn.getAttribute("data-index"));
+        var dayLogsEdit = logs[dayKey] || [];
+        var entryEdit = dayLogsEdit[indexEdit];
+        if (!entryEdit) return;
+        enterEditMode(dayKey, indexEdit, entryEdit);
+        return;
+      }
+
+      if (btn.classList.contains("log-delete-btn")) {
+        var indexDelete = Number(btn.getAttribute("data-index"));
+        deleteLogEntry(dayKey, indexDelete);
+        return;
+      }
+    });
     }
 
     document.addEventListener("DOMContentLoaded", init);
