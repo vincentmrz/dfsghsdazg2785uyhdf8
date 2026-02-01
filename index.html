@@ -1116,89 +1116,91 @@
   (function () {
     "use strict";
 
-    const DEFAULT_DATA = {
-      workouts: [
-        {
-          id: "lundi-upper-force",
-          name: "Lundi – Upper Force",
-          short: "Lun",
-          warmup: "5–7 min rameur ou vélo léger + 2 séries de chauffe sur le développé couché (charges progressives).",
-          cardio: "Pas de cardio programmé (self-défense ce jour).",
-          exercises: [
-            { id: "bench", name: "Développé couché barre", restSec: 180, sets: 5, repRange: "4 à 6", rir: "RIR 1–2" },
-            { id: "pulldown-neutral", name: "Tirage vertical prise neutre poulie", restSec: 180, sets: 5, repRange: "4 à 6", rir: "RIR 1–2" },
-            { id: "chest-press", name: "Presse poitrine horizontale convergente", restSec: 150, sets: 4, repRange: "6 à 8", rir: "RIR 1–2" },
-            { id: "row-machine", name: "Rowing assis convergent poitrine appuyée", restSec: 150, sets: 4, repRange: "6 à 8", rir: "RIR 1–2" },
-            { id: "shoulder-press", name: "Développé épaules machine convergente", restSec: 120, sets: 3, repRange: "6 à 8", rir: "RIR 1–2" },
-            { id: "lat-raise-cable", name: "Élévations latérales poulie unilatérale", restSec: 75, sets: 3, repRange: "12 à 15", rir: "RIR 1–3" },
-            { id: "pallof", name: "Gainage anti-rotation (Pallof press)", restSec: 45, sets: 3, repRange: "10 à 12", rir: "RIR 2–3" }
-          ]
-        },
-        {
-          id: "mardi-lower-force",
-          name: "Mardi – Lower Force",
-          short: "Mar",
-          warmup: "5–7 min vélo + squats au poids du corps + 2 séries de chauffe à la hack squat.",
-          cardio: "20 min marche sur tapis incliné ou vélo léger en fin de séance (zone 2, respiration un peu accélérée mais tu peux parler).",
-          exercises: [
-            { id: "hack-squat", name: "Hack squat (machine)", restSec: 180, sets: 5, repRange: "4 à 6", rir: "RIR 1–2" },
-            { id: "rdl-db", name: "Soulevé de terre roumain haltères", restSec: 150, sets: 4, repRange: "6 à 8", rir: "RIR 1–2" },
-            { id: "leg-press", name: "Presse à cuisses", restSec: 150, sets: 3, repRange: "6 à 8", rir: "RIR 1–2" },
-            { id: "leg-curl", name: "Leg curl assis (machine)", restSec: 120, sets: 3, repRange: "8 à 10", rir: "RIR 1–2" },
-            { id: "calf-press", name: "Mollets à la presse à cuisses", restSec: 90, sets: 4, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "cable-crunch", name: "Crunch à la poulie haute", restSec: 60, sets: 3, repRange: "12 à 15", rir: "RIR 2–3" }
-          ]
-        },
-        {
-          id: "mercredi-push-hypertrophy",
-          name: "Mercredi – Push Hypertrophie",
-          short: "Mer",
-          warmup: "5 min cardio léger + mobilité épaules + 2 séries de chauffe à la presse poitrine.",
-          cardio: "Optionnel : 10–15 min marche ou vélo très léger en fin de séance.",
-          exercises: [
-            { id: "chest-press-horiz", name: "Presse poitrine horizontale convergente", restSec: 150, sets: 4, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "incline-db", name: "Développé couché haltères incliné (20–30°)", restSec: 120, sets: 3, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "dips", name: "Dips buste penché", restSec: 150, sets: 3, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "shoulder-press-machine", name: "Développé épaules machine convergente", restSec: 120, sets: 3, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "lat-raise-cable-high", name: "Élévations latérales poulie unilatérale", restSec: 75, sets: 4, repRange: "12 à 20", rir: "RIR 1–3" },
-            { id: "cable-fly", name: "Écartés aux câbles (debout au centre)", restSec: 75, sets: 3, repRange: "12 à 15", rir: "RIR 1–2" },
-            { id: "triceps-rope", name: "Extension triceps à la corde poulie", restSec: 60, sets: 3, repRange: "10 à 15", rir: "RIR 1–2" }
-          ]
-        },
-        {
-          id: "jeudi-pull-hypertrophy",
-          name: "Jeudi – Pull Hypertrophie",
-          short: "Jeu",
-          warmup: "5 min cardio léger + 2 séries de tirage vertical très léger.",
-          cardio: "Pas de cardio programmé (self-défense ce jour).",
-          exercises: [
-            { id: "pulldown-neutral-hyp", name: "Tirage vertical prise neutre poulie", restSec: 150, sets: 4, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "row-machine-hyp", name: "Rowing assis convergent poitrine appuyée", restSec: 150, sets: 4, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "onearm-cable-row", name: "Rowing unilatéral à la poulie (basse)", restSec: 120, sets: 3, repRange: "10 à 12", rir: "RIR 1–2" },
-            { id: "rear-delt-cable", name: "Oiseau à la poulie", restSec: 60, sets: 3, repRange: "15 à 20", rir: "RIR 1–3" },
-            { id: "curl-ez", name: "Curl barre EZ debout", restSec: 120, sets: 3, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "curl-cable", name: "Curl à la poulie basse", restSec: 75, sets: 3, repRange: "10 à 15", rir: "RIR 1–2" },
-            { id: "face-pull", name: "Face pull corde poulie", restSec: 60, sets: 3, repRange: "15 à 20", rir: "RIR 1–3" }
-          ]
-        },
-        {
-          id: "vendredi-legs-shoulders",
-          name: "Vendredi – Legs & Shoulders Hypertrophie",
-          short: "Ven",
-          warmup: "5–7 min cardio léger + squats à vide + 2 séries de chauffe à la presse à cuisses.",
-          cardio: "25–30 min marche sur tapis incliné en fin de séance (zone 2, tranquille mais continu).",
-          exercises: [
-            { id: "leg-press-hyp", name: "Presse à cuisses", restSec: 150, sets: 4, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "bulgarian-split", name: "Fentes bulgares haltères", restSec: 150, sets: 3, repRange: "10 à 12", rir: "RIR 1–2" },
-            { id: "leg-curl-hyp", name: "Leg curl assis (machine)", restSec: 120, sets: 3, repRange: "10 à 15", rir: "RIR 1–2" },
-            { id: "hip-thrust", name: "Hip thrust barre sur banc", restSec: 150, sets: 3, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "calf-seated", name: "Mollets assis (machine)", restSec: 75, sets: 4, repRange: "12 à 15", rir: "RIR 1–2" },
-            { id: "shoulder-press-hyp", name: "Développé épaules machine convergente", restSec: 120, sets: 3, repRange: "8 à 12", rir: "RIR 1–2" },
-            { id: "lat-raise-partials", name: "Élévations latérales poulie – partiels", restSec: 60, sets: 2, repRange: "10–12 + 5–10 partiels", rir: "RIR 1–3" }
-          ]
-        }
+const USER_DATA = {
+  profile: {
+    weight: 82,
+    height: 178,
+    age: 25,
+    goal: "Recomposition (Split 5 Jours - Weekends OFF)"
+  },
+  workouts: [
+    {
+      id: "lundi-upper-force",
+      name: "Lundi – Upper Force (Tension Max)",
+      short: "Lun",
+      warmup: "Protocole RAMPE : 5 min Rameur + YTWL élastique + 2 séries chauffe progressive.",
+      cardio: "Post-séance : 15 min Marche Inclinée (12%, 4-5km/h).",
+      exercises: [
+        { id: "bench", name: "Développé couché barre", restSec: 180, sets: 4, repRange: "5 à 8", rir: "RIR 1" },
+        { id: "pulldown-neutral", name: "Tirage vertical prise neutre", restSec: 180, sets: 4, repRange: "6 à 8", rir: "RIR 1" },
+        { id: "incline-press-machine", name: "Presse poitrine Convergente Inclinée", restSec: 150, sets: 3, repRange: "8 à 10", rir: "RIR 1" },
+        { id: "row-machine-upper", name: "Rowing assis machine (Focus Haut dos)", restSec: 150, sets: 3, repRange: "8 à 10", rir: "RIR 1" },
+        { id: "lat-raise-cable", name: "Élévations latérales poulie", restSec: 90, sets: 4, repRange: "10 à 15", rir: "RIR 1" },
+        { id: "plank-weighted", name: "Gainage lesté", restSec: 60, sets: 3, repRange: "45-60 sec", rir: "RIR 1" }
       ]
-    };
+    },
+    {
+      id: "mardi-lower-force",
+      name: "Mardi – Lower Force",
+      short: "Mar",
+      warmup: "5 min Vélo + Mobility Hanches + 3 séries chauffe Hack Squat.",
+      cardio: "Aucun cardio. Récupération nerveuse maximale.",
+      exercises: [
+        { id: "hack-squat", name: "Hack Squat (Amplitude complète)", restSec: 180, sets: 4, repRange: "5 à 8", rir: "RIR 1" },
+        { id: "rdl-db", name: "Soulevé de terre roumain", restSec: 180, sets: 3, repRange: "6 à 9", rir: "RIR 1-2" },
+        { id: "leg-press-unilateral", name: "Presse à cuisses Unilatérale", restSec: 120, sets: 3, repRange: "8 à 10", rir: "RIR 1" },
+        { id: "leg-curl-seated", name: "Leg curl assis", restSec: 120, sets: 4, repRange: "8 à 12", rir: "RIR 0-1" },
+        { id: "calf-standing", name: "Mollets debout machine", restSec: 90, sets: 4, repRange: "10 à 15", rir: "RIR 0" }
+      ]
+    },
+    {
+      id: "mercredi-push-hypertrophy",
+      name: "Mercredi – Push Hypertrophie",
+      short: "Mer",
+      warmup: "Mobilité épaules + Pompes + Chauffe spécifique.",
+      cardio: "Post-séance : 20 min Tapis Incliné (Zone 2).",
+      exercises: [
+        { id: "incline-db-press", name: "Développé Incliné Haltères (30°)", restSec: 150, sets: 4, repRange: "8 à 12", rir: "RIR 1" },
+        { id: "dips-weighted", name: "Dips (Lestés si besoin)", restSec: 150, sets: 3, repRange: "8 à 12", rir: "RIR 1" },
+        { id: "shoulder-press-smith", name: "Développé Militaire Assis (Cadre guidé)", restSec: 120, sets: 3, repRange: "10 à 12", rir: "RIR 1" },
+        { id: "lateral-raise-db", name: "Élévations latérales haltères", restSec: 75, sets: 4, repRange: "12 à 15", rir: "RIR 0-1" },
+        { id: "skullcrusher", name: "Barre au front (Triceps)", restSec: 90, sets: 3, repRange: "10 à 12", rir: "RIR 1" },
+        { id: "triceps-pushdown", name: "Extension Triceps Poulie Haute", restSec: 60, sets: 3, repRange: "12 à 15", rir: "RIR 0" }
+      ]
+    },
+    {
+      id: "jeudi-pull-hypertrophy",
+      name: "Jeudi – Pull Hypertrophie",
+      short: "Jeu",
+      warmup: "Tirages élastiques + Activation Scapulaire.",
+      cardio: "Post-séance : 20 min Tapis Incliné (Zone 2).",
+      exercises: [
+        { id: "pull-up-weighted", name: "Tractions", restSec: 150, sets: 3, repRange: "6 à 10", rir: "RIR 1" },
+        { id: "chest-supported-row", name: "Rowing Haltères Poitrine appuyée", restSec: 120, sets: 4, repRange: "10 à 12", rir: "RIR 1" },
+        { id: "lat-pulldown-single", name: "Tirage vertical Unilatéral", restSec: 90, sets: 3, repRange: "10 à 12", rir: "RIR 1" },
+        { id: "reverse-pec-deck", name: "Oiseau machine (Arrière d'épaule)", restSec: 75, sets: 4, repRange: "15 à 20", rir: "RIR 0" },
+        { id: "bicep-curl-bayesian", name: "Bayesian Curl (Biceps)", restSec: 75, sets: 4, repRange: "10 à 15", rir: "RIR 0" },
+        { id: "hanging-leg-raise", name: "Relevés de jambes suspendu (Abdos)", restSec: 90, sets: 4, repRange: "10 à 15", rir: "RIR 1" }
+      ]
+    },
+    {
+      id: "vendredi-legs-finish",
+      name: "Vendredi – Legs & Shoulders Finish",
+      short: "Ven",
+      warmup: "Vélo 5 min + Squats poids du corps.",
+      cardio: "Marche lente retour au calme.",
+      exercises: [
+        { id: "bulgarian-split-squat", name: "Fentes Bulgares", restSec: 150, sets: 3, repRange: "8 à 10", rir: "RIR 1" },
+        { id: "leg-extension", name: "Leg Extension (Peak contraction)", restSec: 90, sets: 3, repRange: "12 à 15", rir: "RIR 0" },
+        { id: "hip-thrust-machine", name: "Hip Thrust", restSec: 120, sets: 3, repRange: "10 à 12", rir: "RIR 1" },
+        { id: "leg-curl-lying", name: "Leg Curl Allongé", restSec: 90, sets: 3, repRange: "10 à 15", rir: "RIR 1" },
+        { id: "calf-press", name: "Mollets à la presse", restSec: 60, sets: 4, repRange: "12 à 15", rir: "RIR 0" },
+        { id: "abs-cable-crunch", name: "Crunch Poulie haute", restSec: 60, sets: 4, repRange: "12 à 15", rir: "RIR 1" },
+        { id: "lat-raise-machine", name: "Élévations Latérales Machine (Finisher)", restSec: 60, sets: 3, repRange: "15 à 20", rir: "RIR 0" }
+      ]
+    }
+  ]
+};
 
     const STORAGE_KEY_LOGS = "coachUltimeGymLogs";
     const STORAGE_KEY_UI   = "coachUltimeGymUI";
@@ -2819,3 +2821,4 @@
   </script>
 </body>
 </html>
+
